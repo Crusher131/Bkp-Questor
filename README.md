@@ -1,0 +1,8 @@
+Defina as variaveis
+CLIENTE
+EMAIL
+TIME_BKCP
+
+INFORMAÇÕES DO BANCO:
+USER
+SENHA
