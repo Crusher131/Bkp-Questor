@@ -5,32 +5,6 @@ config=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=" "FBDQUE=" "ARQQUE="
 configprint=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=\"/opt/firebird/bin\"" "FBDQUE=\"/home/firebird/questor.fdb\"" "ARQQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.fbk" "ARQTGZQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.tgz" "ARQDEL=bkp-Questor-\$CUSTOM_NAME-\$CLIENTE" "USER=SYSDBA" "SENHA=")
 # Verifica se o arquivo de config existe
 
-if test -f "bkp-questor.cfg"; then
-a=0
-    for i in "${config[@]}"; do
-        if ! grep -q "$i" "bkp-questor.cfg"; then 
-            echo "${configprint[$a]}" >> bkp-questor.cfg
-            echo "${configprint[$a]}"
-            init=false
-        fi
-            ((a=a+1))
-    done
-    source bkp-questor.cfg
-else
-    init=false
-    touch bkp-questor.cfg
-    for i in "${config[@]}"; do
-        echo "${configprint[$a]}" >> bkp-questor.cfg
-        echo "${configprint[$a]}"
-        ((a=a+1))
-    done
-fi
-
-
-if [ "$init" = "false" ]; then
-    echo "O arquivo bkp-questor.cfg Não existia ou estava com linhas faltantes, Ele foi corrigido, favor efetue as alterações necessarias e execute novamente"
-    exit 2
-fi
 
 #Parametros passados por comando
 helpFunction(){
@@ -58,6 +32,32 @@ then
    exit 2
 fi
 
+if test -f "bkp-questor.cfg"; then
+a=0
+    for i in "${config[@]}"; do
+        if ! grep -q "$i" "bkp-questor.cfg"; then 
+            echo "${configprint[$a]}" >> bkp-questor.cfg
+            echo "${configprint[$a]}"
+            init=false
+        fi
+            ((a=a+1))
+    done
+    source bkp-questor.cfg
+else
+    init=false
+    touch bkp-questor.cfg
+    for i in "${config[@]}"; do
+        echo "${configprint[$a]}" >> bkp-questor.cfg
+        echo "${configprint[$a]}"
+        ((a=a+1))
+    done
+fi
+
+
+if [ "$init" = "false" ]; then
+    echo "O arquivo bkp-questor.cfg Não existia ou estava com linhas faltantes, Ele foi corrigido, favor efetue as alterações necessarias e execute novamente"
+    exit 2
+fi
 
 
 echo " "
@@ -74,6 +74,8 @@ log() {
 
   
 }
+ARQTGZQUE2=$ARQTGZQUE
+
 
 dados(){
 
@@ -144,9 +146,9 @@ firebird(){
         $FBDDIR/gbak -b $FBDQUE $ARQQUE -user $USER -pas $SENHA #gerando backup do firebird
     if [ $? -eq 0 ] ; then
         DATAFIN=`date +%c`
-        tar -czf $ARQTGZQUE $ARQQUE
+        tar -czf $ARQTGZQUE2 $ARQQUE
         rm -f $ARQQUE
-        ls -lgoh $ARQTGZQUE
+        ls -lgoh $ARQTGZQUE2
         log "------------------------------------------------------------------"
         log "Backup firebird $CLIENTE realizado $DATAFIN "
         log "------------------------------------------------------------------"
