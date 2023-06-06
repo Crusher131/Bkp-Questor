@@ -1,8 +1,39 @@
 #!/bin/bash
 DATA=$(date --date "0 day ago" +%a-%d-%m-%Y)
+init=true
+config=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=" "FBDQUE=" "ARQQUE=" "ARQTGZQUE=" "ARQDEL=" "USER=" "SENHA=")
+configprint=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=\"/opt/firebird/bin\"" "FBDQUE=\"/home/firebird/questor.fdb\"" "ARQQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.fbk" "ARQTGZQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.tgz" "ARQDEL=bkp-Questor-\$CUSTOM_NAME-\$CLIENTE" "USER=SYSDBA" "SENHA=")
+# Verifica se o arquivo de config existe
+
+if test -f "bkp-questor.cfg"; then
+a=0
+    for i in "${config[@]}"; do
+        if ! grep -q "$i" "bkp-questor.cfg"; then 
+            echo "${configprint[$a]}" >> bkp-questor.cfg
+            echo "${configprint[$a]}"
+            init=false
+        fi
+            ((a=a+1))
+    done
+    source bkp-questor.cfg
+else
+    init=false
+    touch bkp-questor.cfg
+    for i in "${config[@]}"; do
+        echo "${configprint[$a]}" >> bkp-questor.cfg
+        echo "${configprint[$a]}"
+        ((a=a+1))
+    done
+fi
+
+
+if [ "$init" = "false" ]; then
+    echo "O arquivo bkp-questor.cfg Não existia ou estava com linhas faltantes, Ele foi corrigido, favor efetue as alterações necessarias e execute novamente"
+    exit 2
+fi
+
 #Parametros passados por comando
-helpFunction()
-{
+helpFunction(){
    echo ""
    echo "Uso: $0 -n Nome"
    echo " -n Adicionar Customização ao nome do arquivo de backup
@@ -55,23 +86,6 @@ log "#                                                                "
 log "##################################################################"
 log " Backup iniciado em $DATAIN               "
 log "------------------------------------------------------------------"
-CLIENTE=""
-EMAIL=""
-TIME_BKCP="1"
-DSTDIR="/diversos/backup"
-#################### CONFIGURACOES PARA FIREBIRD ###########################################################
-
-FBDDIR="/opt/firebird/bin"
-FBDQUE="/home/firebird/questor.fdb"
-ARQQUE=$DSTDIR/bkp-Questor-$CUSTOM_NAME-$CLIENTE-$DATA.fbk
-ARQTGZQUE=$DSTDIR/bkp-Questor-$CUSTOM_NAME-$CLIENTE-$DATA.tgz
-ARQDEL=bkp-Questor-$CUSTOM_NAME-$CLIENTE
-
-USER=""
-SENHA=''
-
-################### FIM DA CONFIGURACAO DO FIREBIRD ########################################################
-
 }
 
 apagando(){
