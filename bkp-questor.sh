@@ -42,7 +42,7 @@ a=0
         fi
             ((a=a+1))
     done
-    source bkp-questor.cfg
+    source /scripts/bkp-questor.cfg
 else
     init=false
     touch bkp-questor.cfg
