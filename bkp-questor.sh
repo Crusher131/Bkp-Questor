@@ -1,8 +1,8 @@
 #!/bin/bash
 DATA=$(date --date "0 day ago" +%a-%d-%m-%Y)
 init=true
-config=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=" "FBDQUE=" "ARQQUE=" "ARQTGZQUE=" "ARQDEL=" "USER=" "SENHA=")
-configprint=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=\"/opt/firebird/bin\"" "FBDQUE=\"/home/firebird/questor.fdb\"" "ARQQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.fbk" "ARQTGZQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.tgz" "ARQDEL=bkp-Questor-\$CUSTOM_NAME-\$CLIENTE" "USER=SYSDBA" "SENHA=")
+config=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=" "FBDQUE=" "ARQQUE=" "ARQTGZQUE=" "ARQDEL=" "USER=" "SENHA=" "DSTNUVEM=")
+configprint=("CLIENTE=" "EMAIL=" "TIME_BKCP=" "DSTDIR=" "FBDDIR=\"/opt/firebird/bin\"" "FBDQUE=\"/home/firebird/questor.fdb\"" "ARQQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.fbk" "ARQTGZQUE=\$DSTDIR/bkp-Questor-\$CUSTOM_NAME-\$CLIENTE-\$DATA.tgz" "ARQDEL=bkp-Questor-\$CUSTOM_NAME-\$CLIENTE" "USER=SYSDBA" "SENHA=" "DSTNUVEM=")
 # Verifica se o arquivo de config existe
 
 
@@ -14,16 +14,37 @@ helpFunction(){
    ex: $0 -n 10horas
    Vai Gerar um arquivo 
    $DSTDIR/bkp-Questor-10horas-$CLIENTE-$DATA.tgz"
+   exit 0
 }
 
+USE_NUVEM=false
 
-while getopts "n:" opt
+while [[ $# -gt 0 ]]
 do
-   case "$opt" in
-      n ) CUSTOM_NAME="$OPTARG" ;;
-      ? ) helpFunction ;; 
+   key="$1"
+
+   case $key in
+      -n)
+         CUSTOM_NAME="$2"
+         shift
+         shift
+         ;;
+      --help)
+         helpFunction
+         ;;
+      --nuvem)
+         USE_NUVEM=true
+         shift
+         ;;
+      *) # argumentos não reconhecidos
+         shift
+         ;;
    esac
 done
+
+if [[ $USE_NUVEM == true ]]; then
+   DSTDIR=$DSTNUVEM
+fi
 
 if [ -z "$CUSTOM_NAME" ] 
 then
