@@ -32,10 +32,10 @@ then
    exit 2
 fi
 
-if test -f "bkp-questor.cfg"; then
+if test -f "/scripts/bkp-questor.cfg"; then
 a=0
     for i in "${config[@]}"; do
-        if ! grep -q "$i" "bkp-questor.cfg"; then 
+        if ! grep -q "$i" "/scripts/bkp-questor.cfg"; then 
             echo "${configprint[$a]}" >> bkp-questor.cfg
             echo "${configprint[$a]}"
             init=false
