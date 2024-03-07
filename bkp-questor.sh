@@ -94,9 +94,9 @@ if test -f "/scripts/bkp-questor.cfg"; then
     source /scripts/bkp-questor.cfg
 else
     init=false
-    touch bkp-questor.cfg
+    touch /scripts/bkp-questor.cfg
     for i in "${config[@]}"; do
-        echo "${configprint[$a]}" >> bkp-questor.cfg
+        echo "${configprint[$a]}" >> /scripts/bkp-questor.cfg
         echo "${configprint[$a]}"
         ((a=a+1))
     done
